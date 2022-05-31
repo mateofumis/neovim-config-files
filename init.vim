@@ -24,6 +24,56 @@ Plug 'joshdick/onedark.vim'
 
 call plug#end()
 
+" =========================
+" Custom Vim Functions
+" =========================
+
+
+"Goyo Settings
+function! s:goyo_enter()
+  set noshowmode
+  set noshowcmd
+  set scrolloff=999
+  Limelight
+endfunction
+
+function! s:goyo_leave()
+  set showmode
+  set showcmd
+  set scrolloff=5
+  Limelight!
+  hi! Normal ctermbg=NONE guibg=NONE 
+endfunction
+
+autocmd! User GoyoEnter nested call <SID>goyo_enter()
+autocmd! User GoyoLeave nested call <SID>goyo_leave()
+
+
+"NERDTree setup
+
+"Exit Vim if NERDTree is the only window left.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
+    \ quit | endif
+
+"Changing default NERDTree arrows
+let g:NERDTreeDirArrowExpandable = '▸'
+let g:NERDTreeDirArrowCollapsible = '▾'
+
+"KeyBind for NERDTree
+"nnoremap <F4> :NERDTreeToggle<CR>
+nnoremap <C-t> :NERDTreeToggle<CR>
+
+"KeyBind for TAGbar
+nmap <F8> :TagbarToggle<CR>
+
+
+let g:user_emmet_leader_key='<Tab>'
+let g:user_emmet_settings = {
+  \  'javascript.jsx' : {
+    \      'extends' : 'jsx',
+    \  },
+  \}
+
 
 autocmd!
 
