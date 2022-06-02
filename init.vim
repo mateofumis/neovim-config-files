@@ -1,139 +1,78 @@
-call plug#begin('~/.vim/plugged')
+call plug#begin("~/.vim/plugged")
+  " Theme
+  Plug 'dracula/vim'
 
-Plug 'preservim/nerdtree'
+  " Language Client
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  let g:coc_global_extensions = ['coc-emmet', 'coc-css', 'coc-html', 'coc-json', 'coc-prettier', 'coc-tsserver']
+  " TypeScript Highlighting
+  Plug 'leafgarland/typescript-vim'
+  Plug 'peitalin/vim-jsx-typescript'
 
-Plug 'junegunn/limelight.vim'
 
-Plug 'junegunn/goyo.vim'
+  " File Explorer with Icons
+  Plug 'scrooloose/nerdtree'
+  Plug 'ryanoasis/vim-devicons'
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-Plug 'ryanoasis/vim-devicons'
-
-Plug 'sheerun/vim-polyglot'
-
-Plug 'pangloss/vim-javascript'
-
-Plug 'ap/vim-css-color'
-
-Plug 'itchyny/lightline.vim'
-
-Plug 'jiangmiao/auto-pairs'
-
-Plug 'joshdick/onedark.vim'
-
+  " File Search
+  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+  Plug 'junegunn/fzf.vim'
 call plug#end()
 
-" =========================
-" Custom Vim Functions
-" =========================
+" Enable theming support
+if (has("termguicolors"))
+ set termguicolors
+endif
 
-
-"Goyo Settings
-function! s:goyo_enter()
-  set noshowmode
-  set noshowcmd
-  set scrolloff=999
-  Limelight
-endfunction
-
-function! s:goyo_leave()
-  set showmode
-  set showcmd
-  set scrolloff=5
-  Limelight!
-  hi! Normal ctermbg=NONE guibg=NONE 
-endfunction
-
-autocmd! User GoyoEnter nested call <SID>goyo_enter()
-autocmd! User GoyoLeave nested call <SID>goyo_leave()
-
-
-"NERDTree setup
-
-"Exit Vim if NERDTree is the only window left.
-autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
-    \ quit | endif
-
-"Changing default NERDTree arrows
-let g:NERDTreeDirArrowExpandable = '▸'
-let g:NERDTreeDirArrowCollapsible = '▾'
-
-"KeyBind for NERDTree
-"nnoremap <F4> :NERDTreeToggle<CR>
-nnoremap <C-t> :NERDTreeToggle<CR>
-
-"KeyBind for TAGbar
-nmap <F8> :TagbarToggle<CR>
-
-
-let g:user_emmet_leader_key='<Tab>'
-let g:user_emmet_settings = {
-  \  'javascript.jsx' : {
-    \      'extends' : 'jsx',
-    \  },
-  \}
-
-
-autocmd!
-
-set nocompatible
-set number
+" Theme
 syntax enable
-set fileencoding=utf-8
-set encoding=utf-8
-set title
-set mouse=a
-set autoindent
+colorscheme dracula
 
-let g:coc_global_extensions = [
-  \ 'coc-tsserver',
-  \ 'coc-json',
-  \ 'coc-css',
-  \  'coc-eslint',
-  \  'coc-prettier'
-  \ ]
+let g:NERDTreeShowHidden = 1
+let g:NERDTreeMinimalUI = 1
+let g:NERDTreeIgnore = []
+let g:NERDTreeStatusline = ''
+" Automaticaly close nvim if NERDTree is only thing left open
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" Toggle
+nnoremap <silent> <C-b> :NERDTreeToggle<CR>
 
-" Coc-Snippets KeyBinds
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? coc#_select_confirm() :
-      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
+nnoremap <C-p> :FZF<CR>
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-s': 'split',
+  \ 'ctrl-v': 'vsplit'
+  \}
+" requires silversearcher-ag
+" used to ignore gitignore files
+let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
+" open new split panes to right and below
+set splitright
+set splitbelow
+
+" turn terminal to normal mode with escape
+tnoremap <Esc> <C-\><C-n>
+
+" use alt+hjkl to move between split/vsplit panels
+tnoremap <A-h> <C-\><C-n><C-w>h
+tnoremap <A-j> <C-\><C-n><C-w>j
+tnoremap <A-k> <C-\><C-n><C-w>k
+tnoremap <A-l> <C-\><C-n><C-w>l
+nnoremap <A-h> <C-w>h
+nnoremap <A-j> <C-w>j
+nnoremap <A-k> <C-w>k
+nnoremap <A-l> <C-w>l
+
+" start terminal in insert mode
+au BufEnter * if &buftype == 'terminal' | :startinsert | endif
+
+" open terminal on ctrl+;
+" uses zsh instead of bash
+function! OpenTerminal()
+  split term://bash
+  resize 10
 endfunction
-
-let g:coc_snippet_next = '<tab>'
-
-
-autocmd BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart
-autocmd BufLeave *.{js,jsx,ts,tsx} :syntax sync clear
+nnoremap <c-n> :call OpenTerminal()<CR>
 
 
-nnoremap <silent> K :call CocAction('doHover')<CR>
-
-
-"function! s:show_hover_doc()
-"  call timer_start(500, 'ShowDocIfNoDiagnostic')
-"endfunction
-
-
-"autocmd CursorHoldI * :call <SID>show_hover_doc()
-"autocmd CursorHold * :call <SID>show_hover_doc()
-
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gr <Plug>(coc-references)
-
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-nnoremap <silent> <space>s :<C-u>CocList -I symbols<cr>
-
-nnoremap <silent> <space>d :<C-u>CocList diagnostics<cr>
-
-nmap <leader>do <Plug>(coc-codeaction)
-
-nmap <leader>rn <Plug>(coc-rename)
