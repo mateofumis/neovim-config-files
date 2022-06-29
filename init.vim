@@ -28,6 +28,8 @@ Plug 'epilande/vim-react-snippets'
 
 Plug 'SirVer/ultisnips'
 
+Plug 'turbio/bracey.vim'
+
 call plug#end()
 
 " Enable theming support
