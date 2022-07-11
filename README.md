@@ -1,8 +1,10 @@
-Mi nombre es Mateo y soy un Software Developer. A la hora de programar utilizo el editor de textos Neovim. 
-Por eso, en este repositorio tengo subidos los archivos de mi configuración actual de Neovim.
+Esta es mi configuración actual de Neovim para el desarrollo web en React.
 
 Se encuentran los archivos:
 
-•	init.vim
+• init.vim
 
 • coc-settings.json
+
+NOTA: Una vez instalados los plugins, es necesario ejecutar el comando "CocInstall coc-snippets" para poder usar los snippets de autocompletado.
+
