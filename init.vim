@@ -44,6 +44,7 @@ autocmd!
 
 set nocompatible
 set number
+set relativenumber
 syntax enable
 set fileencoding=utf-8
 set encoding=utf-8
